@@ -1,0 +1,18 @@
+Package: peakr
+Title: Interactive tools for analysis of simple datasets
+Version: 0.0.1
+Authors@R: person("Emil Tveden", "Bjerglund", email = "emil@tbjerglund.dk", role = c("aut", "cre"))
+Description: Provides a set of shinyGadgets to support analysis of simple datasets (e.g. spectra and time series)
+Depends: R (>= 3.4.2)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Suggests: testthat
+RoxygenNote: 6.0.1
+Imports: ggplot2,
+    dplyr,
+    tibble,
+    shiny,
+    miniUI,
+    clipr,
+    rlang
