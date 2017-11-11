@@ -21,3 +21,10 @@ The following gadgets are available:
 When doing interactive analysis in a gadget, the result should still be completely reproducible so that the same result is obtained the next time the script is run. For this reason all `peak_*()` functions return a line of R code with a corresponding `add_*()` function, that will produce the same result as the interactive analysis. This code is automatically copied to the clipboard, ready to be pasted into the analysis script.
 
 The plot from the gadget can be reproduced with the corresponding `plot_*()` function.
+
+## Installation
+`peakr` is not on CRAN yet. Install using `devtools`.
+
+```
+devtools::install_github('emiltb/peakr')
+```
