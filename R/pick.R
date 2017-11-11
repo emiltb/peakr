@@ -87,10 +87,10 @@ peak_pick <- function(df, x, y, find_nearest = TRUE) {
       return_data <- df %>% add_pick(peak_indices)
 
       cat(paste0(length(peak_indices)," peaks found in the dataset\n"))
-      cat("The add_peaks() function below has been copied to the clipboard!\n")
+      cat("The add_pick() function below has been copied to the clipboard!\n")
       cat("Please paste it in your script for reproducibility.\n")
       peak_vec <- paste(peak_indices, collapse = ",")
-      res_string = paste0(input_name, ' <- ', input_name,' %>% add_peaks(c(', peak_vec ,'))')
+      res_string = paste0(input_name, ' <- ', input_name,' %>% add_pick(c(', peak_vec ,'))')
       cat(paste0("    ", res_string, "\n"))
       clipr::write_clip(res_string, return_new = FALSE)
 

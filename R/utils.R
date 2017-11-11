@@ -17,7 +17,7 @@ find_peak <- function(x, y, ind) {
 
   repeat{
     ind <- ind + step
-    if(! y[ind + step] > y[ind]){ break }
+    if(y[ind + step] < y[ind]){ break }
   }
 
   return(ind)
