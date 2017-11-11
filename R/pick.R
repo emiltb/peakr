@@ -1,7 +1,7 @@
 #' Pick peaks in datasets interactively
 #'
 #' @description
-#' `peak_picker()` is an interactive tool (a shinyGadget) for finding peaks in datasets (e.g. a spectrum). After loading the dataset and specifying the columns, you can easily select peaks by clicking on the dataset. The gadget will automatically try to determine the nearest peak to the click and select it. Peaks can be deselected by clicking again.
+#' `peak_pick()` is an interactive tool (a shinyGadget) for finding peaks in datasets (e.g. a spectrum). After loading the dataset and specifying the columns, you can easily select peaks by clicking on the dataset. The gadget will automatically try to determine the nearest peak to the click and select it. Peaks can be deselected by clicking again.
 #'
 #' When you are finished press "Done". The gadget will place a piece of code in your clipboard that you should paste into your script for reproducibility.
 #'
@@ -20,16 +20,15 @@
 #' library(tidyverse)
 #' df <- tibble(x1 = seq(0.1, 25, 0.01), y1 = sin(x1)^2/x1)
 #'
-#' peak_picker(df, x1, y1)
-#' df <- df %>% add_peaks(c(108,451,770,1086,1401,1716,2031,2345))
+#' peak_pick(df, x1, y1)
+#' df <- df %>% add_pick(c(108,451,770,1086,1401,1716,2031,2345))
 #'
-#' # After adding peaks, the plot from the gadget can be reproduced using plot_peaks()
-#' df %>% plot_peaks(x1, y1)
+#' # After adding peaks, the plot from the gadget can be reproduced using plot_pick()
+#' df %>% plot_pick(x1, y1)
 
-
-peak_picker <- function(df, x, y, find_nearest = TRUE) {
-  requireNamespace("shiny", quietly = TRUE)
-  requireNamespace("miniUI", quietly = TRUE)
+peak_pick <- function(df, x, y, find_nearest = TRUE) {
+  #requireNamespace("shiny", quietly = TRUE)
+  #requireNamespace("miniUI", quietly = TRUE)
   input_name <- deparse(substitute(df))
 
   x <- rlang::enquo(x)
@@ -80,12 +79,12 @@ peak_picker <- function(df, x, y, find_nearest = TRUE) {
     })
     output$plot1 <- shiny::renderPlot({
       peak_indices <- match(v$selectedData$x, data$x)
-      data %>% add_peaks(peak_indices) %>% plot_peaks(x, y)
+      data %>% add_pick(peak_indices) %>% plot_pick(x, y)
     })
 
     shiny::observeEvent(input$done, {
       peak_indices <- match(v$selectedData$x, data$x)
-      return_data <- df %>% add_peaks(peak_indices)
+      return_data <- df %>% add_pick(peak_indices)
 
       cat(paste0(length(peak_indices)," peaks found in the dataset\n"))
       cat("The add_peaks() function below has been copied to the clipboard!\n")
@@ -101,28 +100,6 @@ peak_picker <- function(df, x, y, find_nearest = TRUE) {
   shiny::runGadget(ui, server)
 }
 
-
-#' Return a standard dataframe with two columns (x and y)
-#'
-#' @param df Dataframe to be converted
-#' @param x Column containing x-coordinates
-#' @param y Column containing y-coordinates
-#'
-#' @return A standard tibble with the given data in two columns (x and y)
-#'
-#' @examples
-#' library(tidyverse)
-#' df <- tibble(x1 = seq(0, 5, 0.1), y1 = sin(x))
-#' generic_df(df, x1, y1)
-#'
-generic_df <- function(df, x, y) {
-  x = rlang::enquo(x)
-  y = rlang::enquo(y)
-
-  tibble::tibble(x = dplyr::pull(df, !!x), y = dplyr::pull(df, !!y))
-}
-
-
 #' Add peak indicators at the given indices
 #'
 #' @param df Dataframe with dataset (e.g. x- and y-values of a spectrum)
@@ -134,51 +111,12 @@ generic_df <- function(df, x, y) {
 #' @examples
 #' library(tidyverse)
 #' tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
-#'   add_peaks(c(148,776))
-add_peaks <- function(df, indices) {
+#'   add_pick(c(148,776))
+
+add_pick <- function(df, indices) {
   return_data <- df %>% dplyr::mutate(peak = FALSE)
   return_data$peak[indices] <- TRUE
   return_data
-}
-
-#' Returns the index of the nearest peak
-#'
-#' Calculates the gradient at the given index and then travels along the line in the upwards direction until a peak is found
-#'
-#' @param x Vector of x-values
-#' @param y Vector of y-values
-#' @param ind Index to start peak search
-#'
-#' @return integer index of peak
-#'
-find_peak <- function(x, y, ind) {
-  grad <- find_gradient(x, y, ind)
-  if (is.na(grad)) return(NA)
-  if (grad > 0) move <- 1 else move <- -1
-
-  if (y[ind + move] > y[ind]) {
-    find_peak(x, y, ind + move)
-  } else {
-    return(ind)
-  }
-}
-
-
-#' Local gradient at given index
-#'
-#' @param x Vector of x-values
-#' @param y Vector of y-values
-#' @param ind Index to calculate the gradient at
-#'
-#' @return numeric
-#'
-find_gradient <- function(x, y, ind) {
-  if (ind == 1 | ind == length(x)) {
-    warning("Index out of bounds")
-    return(NA)
-  }
-
-  (y[ind + 1] - y[ind - 1]) / (x[ind + 1] - x[ind - 1])
 }
 
 #' Plot a dataset contain defined peaks
@@ -193,9 +131,10 @@ find_gradient <- function(x, y, ind) {
 #' @examples
 #' library(tidyverse)
 #' tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
-#'   add_peaks(c(148,776)) %>%
-#'   plot_peaks(x1, y1)
-plot_peaks <- function(df, x, y) {
+#'   add_pick(c(148,776)) %>%
+#'   plot_pick(x1, y1)
+
+plot_pick <- function(df, x, y) {
   if (!("peak" %in% colnames(df))) stop("Column peaks not found")
 
   x <- rlang::enquo(x)
