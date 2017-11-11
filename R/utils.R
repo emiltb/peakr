@@ -13,13 +13,14 @@
 find_peak <- function(x, y, ind) {
   grad <- find_gradient(x, y, ind)
   if (is.na(grad)) return(NA)
-  if (grad > 0) move <- 1 else move <- -1
+  step <- if (grad > 0) 1 else -1
 
-  if (y[ind + move] > y[ind]) {
-    find_peak(x, y, ind + move)
-  } else {
-    return(ind)
+  repeat{
+    ind <- ind + step
+    if(! y[ind + step] > y[ind]){ break }
   }
+
+  return(ind)
 }
 
 

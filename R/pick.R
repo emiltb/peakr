@@ -140,12 +140,10 @@ plot_pick <- function(df, x, y) {
   x <- rlang::enquo(x)
   y <- rlang::enquo(y)
 
-  data <- generic_df(df, !!x, !!y) %>% dplyr::mutate(peak = df$peak)
-
-  nudge_dist <- (max(data$x) - min(data$x)) / 100
-  data %>%
+  generic_df(df, !!x, !!y) %>%
+    dplyr::mutate(peak = df$peak, nudge_dist = (max(y) - min(y))/100 * 3) %>%
     ggplot2::ggplot(ggplot2::aes(x, y)) +
     ggplot2::geom_line() +
-    ggplot2::geom_text(data = . %>% dplyr::filter(peak), ggplot2::aes(x, y, label = round(x, digits = 1)), size = 3, nudge_y = nudge_dist * 9, color = "red") +
-    ggplot2::geom_segment(data = . %>% dplyr::filter(peak), ggplot2::aes(x = x, xend = x, y = y + nudge_dist*2, yend = y + nudge_dist*5), color = "red")
+    ggplot2::geom_point(data = . %>% dplyr::filter(peak), ggplot2::aes(x, y), size = 2, color = "red") +
+    ggplot2::geom_text(data = . %>% dplyr::filter(peak), ggplot2::aes(x, y + nudge_dist, label = x), color = "red")
 }
