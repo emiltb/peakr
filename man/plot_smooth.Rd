@@ -4,7 +4,7 @@
 \alias{plot_smooth}
 \title{Title}
 \usage{
-plot_smooth(df)
+plot_smooth(df, x, y)
 }
 \arguments{
 \item{df}{}

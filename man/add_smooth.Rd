@@ -4,7 +4,7 @@
 \alias{add_smooth}
 \title{Title}
 \usage{
-add_smooth(df)
+add_smooth(df, y, fl)
 }
 \arguments{
 \item{df}{}
