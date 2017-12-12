@@ -1,38 +1,38 @@
-#' Baseline subtraction
+#' #' Baseline subtraction
+#' #'
+#' #' @param df
+#' #' @param x
+#' #' @param y
+#' #'
+#' #' @return
+#' #' @export
+#' #'
+#' #' @examples
 #'
-#' @param df
-#' @param x
-#' @param y
+#' peak_subtract <- function(df, x, y) {
 #'
-#' @return
-#' @export
+#' }
 #'
-#' @examples
-
-peak_subtract <- function(df, x, y) {
-
-}
-
-#' Title
+#' #' Title
+#' #'
+#' #' @param df
+#' #'
+#' #' @return
+#' #' @export
+#' #'
+#' #' @examples
+#' add_subtract <- function(df) {
 #'
-#' @param df
+#' }
 #'
-#' @return
-#' @export
+#' #' Title
+#' #'
+#' #' @param df
+#' #'
+#' #' @return
+#' #' @export
+#' #'
+#' #' @examples
+#' plot_subtract <- function(df) {
 #'
-#' @examples
-add_subtract <- function(df) {
-
-}
-
-#' Title
-#'
-#' @param df
-#'
-#' @return
-#' @export
-#'
-#' @examples
-plot_subtract <- function(df) {
-
-}
+#' }

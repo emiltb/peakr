@@ -2,13 +2,24 @@
 % Please edit documentation in R/integrate.R
 \name{find_background}
 \alias{find_background}
-\title{Title}
+\title{Fit a p-degree polynomial to the selected endpoints}
 \usage{
-find_background(data, x_low, x_high, p, span)
+find_background(df, x_low, x_high, p, span)
 }
 \arguments{
-\item{span}{}
+\item{df}{Tibble containing the 2D data to integrate}
+
+\item{x_low}{Lower limit of integration}
+
+\item{x_high}{Upper limit of integration}
+
+\item{p}{Degree of polynomial used in background subtraction}
+
+\item{span}{Span of the set of points used to fit the background}
+}
+\value{
+A list containing the fitted polynomial as well as the endpoints used for fitting.
 }
 \description{
-Title
+Fit a p-degree polynomial to the selected endpoints
 }

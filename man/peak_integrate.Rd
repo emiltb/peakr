@@ -2,24 +2,30 @@
 % Please edit documentation in R/integrate.R
 \name{peak_integrate}
 \alias{peak_integrate}
-\title{area_picker}
+\title{Peak integrator}
 \usage{
 peak_integrate(df, x, y)
 }
 \arguments{
-\item{df}{}
+\item{df}{Tibble containing the 2D data to integrate}
+
+\item{x}{Column in df containing x-values}
+
+\item{y}{Column in df containing y-values}
+}
+\value{
+Returns a tibble with the original data and the result of the operation, as well as adding code for reproducibility to the clipboard.
 }
 \description{
-area_picker
+Peak integrator
 }
 \examples{
-library(tidyverse)
-
+library(magrittr)
 set.seed(123)
-df <- tibble(x1 = seq(0.001, 10, 0.01), y1 = sin(2*x1)^4/(x1)) \%>\%
-  mutate(y1 = y1 + rnorm(n(), mean = 0.01, sd = 0.1))
+df <- tibble::tibble(x1 = seq(0.001, 10, 0.01), y1 = sin(2*x1)^4/(x1)) \%>\%
+  dplyr::mutate(y1 = y1 + rnorm(n(), mean = 0.01, sd = 0.1))
 
-peakr::peak_integrate(df, x1, y1)
+#peakr::peak_integrate(df, x1, y1)
 
 df <- df \%>\% peakr::add_integrate(x1, y1, x_low = 0.001, x_high = 3.3, p = 1, span = 0.05)
 

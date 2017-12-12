@@ -1,39 +1,39 @@
-#' Normalisation with respect to peak
+#' #' Normalisation with respect to peak
+#' #'
+#' #' @param df
+#' #' @param x
+#' #' @param y
+#' #'
+#' #' @return
+#' #' @export
+#' #'
+#' #' @examples
 #'
-#' @param df
-#' @param x
-#' @param y
+#' peak_normalise <- function(df, x, y) {
 #'
-#' @return
-#' @export
+#' }
 #'
-#' @examples
-
-peak_normalise <- function(df, x, y) {
-
-}
-
-#' Title
+#' #' Title
+#' #'
+#' #' @param df
+#' #'
+#' #' @return
+#' #' @export
+#' #'
+#' #' @examples
+#' add_normalise <- function(df) {
 #'
-#' @param df
+#' }
 #'
-#' @return
-#' @export
+#' #' Title
+#' #'
+#' #' @param df
+#' #'
+#' #' @return
+#' #' @export
+#' #'
+#' #' @examples
+#' plot_normalise <- function(df) {
 #'
-#' @examples
-add_normalise <- function(df) {
-
-}
-
-#' Title
+#' }
 #'
-#' @param df
-#'
-#' @return
-#' @export
-#'
-#' @examples
-plot_normalise <- function(df) {
-
-}
-

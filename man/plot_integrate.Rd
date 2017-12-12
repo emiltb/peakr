@@ -2,13 +2,20 @@
 % Please edit documentation in R/integrate.R
 \name{plot_integrate}
 \alias{plot_integrate}
-\title{Title}
+\title{Plot results of peak integration}
 \usage{
 plot_integrate(df, x, y)
 }
 \arguments{
-\item{df}{}
+\item{df}{A tibble containing the data to pick peaks in}
+
+\item{x}{Column containing the x-values}
+
+\item{y}{Column containing the y-values}
+}
+\value{
+A plot displaying the area of integration
 }
 \description{
-Title
+Plot results of peak integration
 }

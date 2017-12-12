@@ -2,13 +2,20 @@
 % Please edit documentation in R/smooth.R
 \name{plot_smooth}
 \alias{plot_smooth}
-\title{Title}
+\title{Plot results of data smooting}
 \usage{
 plot_smooth(df, x, y)
 }
 \arguments{
-\item{df}{}
+\item{df}{A tibble containing the data to pick peaks in}
+
+\item{x}{Column containing the x-values}
+
+\item{y}{Column containing the y-values}
+}
+\value{
+A plot displaying the orignal and smoothed data, as well as the residual
 }
 \description{
-Title
+Plot results of data smooting
 }

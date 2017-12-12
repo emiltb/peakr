@@ -2,13 +2,20 @@
 % Please edit documentation in R/smooth.R
 \name{add_smooth}
 \alias{add_smooth}
-\title{Title}
+\title{Apply Savitzky-Golay filter}
 \usage{
 add_smooth(df, y, fl)
 }
 \arguments{
-\item{df}{}
+\item{df}{A tibble containing the data to pick peaks in}
+
+\item{y}{Column containing the y-values}
+
+\item{fl}{Filter length for the Savitzky-Golay filter. Must be an odd integer.}
+}
+\value{
+Returns the original dataframe with an addition column containing the smoothed data
 }
 \description{
-Title
+Apply Savitzky-Golay filter
 }

@@ -19,9 +19,3 @@ A standard tibble with the given data in two columns (x and y)
 \description{
 Return a standard dataframe with two columns (x and y)
 }
-\examples{
-library(tidyverse)
-df <- tibble(x1 = seq(0, 5, 0.1), y1 = sin(x))
-generic_df(df, x1, y1)
-
-}

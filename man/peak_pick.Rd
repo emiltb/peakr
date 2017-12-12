@@ -24,13 +24,12 @@ The original dataset with an additional column "peak", which indicates TRUE/FALS
 When you are finished press "Done". The gadget will place a piece of code in your clipboard that you should paste into your script for reproducibility.
 }
 \examples{
-library(tidyverse)
-
+library(magrittr)
 set.seed(123)
-df <- tibble(x = seq(0.001, 10, 0.01), y = sin(10*x)^4/(x)) \%>\%
-  mutate(y = y + rnorm(n(), mean = 0.01, sd = 0.1))
+df <- tibble::tibble(x = seq(0.001, 10, 0.01), y = sin(10*x)^4/(x)) \%>\%
+  dplyr::mutate(y = y + rnorm(n(), mean = 0.01, sd = 0.1))
 
-peakr::peak_pick(df, x, y)
+# peakr::peak_pick(df, x, y)
 
 df <- df \%>\% peakr::add_pick(c(14,48,80,112,143))
 

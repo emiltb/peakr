@@ -1,24 +1,21 @@
-#' Smoothing
+#' Interactive smoothing
 #'
-#' @param df
-#' @param x
-#' @param y
+#' Applies a Savitzky-Golay filter to smooth the data. The filter width can be selected interactively.
 #'
-#' @return
+#' @inheritParams peak_pick
+#'
+#' @return Returns a tibble with the original data and the result of the operation, as well as adding code for reproducibility to the clipboard.
 #' @export
 #'
 #' @examples
-#' library(tidyverse)
+#' df <- tibble::tibble(x1 = 1:1000, y1 = sin(2*pi*(x1)/200)) %>%
+#'   dplyr::mutate(y2 = y1 + rnorm(n())/10)
 #'
-#' df <- tibble(x1 = 1:1000, y1 = sin(2*pi*(x1)/200)) %>%
-#'   mutate(y2 = y1 + rnorm(n())/10)
-#'
-#' peakr::peak_smooth(df, x1, y2)
+#' # peakr::peak_smooth(df, x1, y2)
 #'
 #' df %>% peakr::add_smooth(y2, fl = 95)
 #'
 #' df %>% peakr::add_smooth(y2, fl = 95) %>% peakr::plot_smooth(x1, y2)
-
 
 peak_smooth <- function(df, x, y) {
   #requireNamespace("shiny", quietly = TRUE)
@@ -59,15 +56,15 @@ peak_smooth <- function(df, x, y) {
 }
 
 
-#' Title
+#' Apply Savitzky-Golay filter
 #'
-#' @param df
+#' @inheritParams peak_smooth
+#' @param fl Filter length for the Savitzky-Golay filter. Must be an odd integer.
 #'
-#' @return
+#' @return Returns the original dataframe with an addition column containing the smoothed data
 #' @importFrom rlang :=
 #' @export
-#'
-#' @examples
+
 add_smooth <- function(df, y, fl) {
   y <- rlang::enquo(y)
   y_smooth <- paste0(rlang::quo_name(y),"_smooth")
@@ -75,29 +72,28 @@ add_smooth <- function(df, y, fl) {
     dplyr::mutate(!!y_smooth := pracma::savgol(!!y, fl = fl))
 }
 
-#' Title
+#' Plot results of data smooting
 #'
-#' @param df
+#' @inheritParams peak_smooth
 #'
-#' @return
+#' @return A plot displaying the orignal and smoothed data, as well as the residual
 #' @export
-#'
-#' @examples
+
 plot_smooth <- function(df, x, y) {
   x <- rlang::enquo(x)
   y <- rlang::enquo(y)
   y_smooth <- paste0(rlang::quo_name(y),"_smooth")
 
   df <- generic_df(df, !!x, !!y) %>%
-    mutate(y_smooth = df %>% pull(!!y_smooth)) %>%
-    mutate(resid = y - y_smooth)
+    dplyr::mutate(y_smooth = df %>% dplyr::pull(!!y_smooth)) %>%
+    dplyr::mutate(resid = y - y_smooth)
 
-  g1 <- ggplot(df) +
-    geom_line(aes(x, y), color = "grey20") +
-    geom_line(aes(x, y_smooth), color = "red", size = 1) +
-    theme(axis.text.x = element_blank(), axis.title.x = element_blank(), axis.ticks.x = element_blank())
-  g2 <- ggplot(df, aes(x, resid)) +
-    geom_line()
+  g1 <- ggplot2::ggplot(df) +
+    ggplot2::geom_line(ggplot2::aes_(~x, ~y), color = "grey20") +
+    ggplot2::geom_line(ggplot2::aes_(~x, ~y_smooth), color = "red", size = 1) +
+    ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.title.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank())
+  g2 <- ggplot2::ggplot(df, ggplot2::aes_(~x, ~resid)) +
+    ggplot2::geom_line()
 
   patchwork::wrap_plots(g1, g2, ncol = 1, heights = c(4,1))
 }

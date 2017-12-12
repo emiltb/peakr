@@ -49,12 +49,6 @@ find_gradient <- function(x, y, ind) {
 #' @param y Column containing y-coordinates
 #'
 #' @return A standard tibble with the given data in two columns (x and y)
-#'
-#' @examples
-#' library(tidyverse)
-#' df <- tibble(x1 = seq(0, 5, 0.1), y1 = sin(x))
-#' generic_df(df, x1, y1)
-#'
 
 generic_df <- function(df, x, y) {
   x = rlang::enquo(x)

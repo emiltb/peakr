@@ -2,23 +2,28 @@
 % Please edit documentation in R/smooth.R
 \name{peak_smooth}
 \alias{peak_smooth}
-\title{Smoothing}
+\title{Interactive smoothing}
 \usage{
 peak_smooth(df, x, y)
 }
 \arguments{
-\item{y}{}
+\item{df}{A tibble containing the data to pick peaks in}
+
+\item{x}{Column containing the x-values}
+
+\item{y}{Column containing the y-values}
+}
+\value{
+Returns a tibble with the original data and the result of the operation, as well as adding code for reproducibility to the clipboard.
 }
 \description{
-Smoothing
+Applies a Savitzky-Golay filter to smooth the data. The filter width can be selected interactively.
 }
 \examples{
-library(tidyverse)
+df <- tibble::tibble(x1 = 1:1000, y1 = sin(2*pi*(x1)/200)) \%>\%
+  dplyr::mutate(y2 = y1 + rnorm(n())/10)
 
-df <- tibble(x1 = 1:1000, y1 = sin(2*pi*(x1)/200)) \%>\%
-  mutate(y2 = y1 + rnorm(n())/10)
-
-peakr::peak_smooth(df, x1, y2)
+# peakr::peak_smooth(df, x1, y2)
 
 df \%>\% peakr::add_smooth(y2, fl = 95)
 

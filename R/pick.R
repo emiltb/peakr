@@ -17,13 +17,12 @@
 #' @importFrom rlang !!
 #'
 #' @examples
-#' library(tidyverse)
-#'
+#' library(magrittr)
 #' set.seed(123)
-#' df <- tibble(x = seq(0.001, 10, 0.01), y = sin(10*x)^4/(x)) %>%
-#'   mutate(y = y + rnorm(n(), mean = 0.01, sd = 0.1))
+#' df <- tibble::tibble(x = seq(0.001, 10, 0.01), y = sin(10*x)^4/(x)) %>%
+#'   dplyr::mutate(y = y + rnorm(n(), mean = 0.01, sd = 0.1))
 #'
-#' peakr::peak_pick(df, x, y)
+#' # peakr::peak_pick(df, x, y)
 #'
 #' df <- df %>% peakr::add_pick(c(14,48,80,112,143))
 
@@ -91,12 +90,12 @@ peak_pick <- function(df, x, y, find_nearest = TRUE) {
       peak_indices <- match(v$selectedData$x, data$x)
       return_data <- df %>% add_pick(peak_indices)
 
-      cat(paste0(length(peak_indices)," peaks found in the dataset\n"))
-      cat("The add_pick() function below has been copied to the clipboard!\n")
-      cat("Please paste it in your script for reproducibility.\n")
+      message(length(peak_indices)," peaks found in the dataset")
+      message("The add_pick() function below has been copied to the clipboard!")
+      message("Please paste it in your script for reproducibility.")
       peak_vec <- paste(peak_indices, collapse = ",")
       res_string = paste0(input_name, ' <- ', input_name,' %>% peakr::add_pick(c(', peak_vec ,'))')
-      cat(paste0("    ", res_string, "\n"))
+      message("\t", res_string)
       clipr::write_clip(res_string, return_new = FALSE)
 
       shiny::stopApp(returnValue = invisible(return_data))
@@ -114,8 +113,8 @@ peak_pick <- function(df, x, y, find_nearest = TRUE) {
 #' @export
 #'
 #' @examples
-#' library(tidyverse)
-#' tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
+#' library(magrittr)
+#' tibble::tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
 #'   add_pick(c(148,776))
 
 add_pick <- function(df, indices) {
@@ -134,8 +133,7 @@ add_pick <- function(df, indices) {
 #' @export
 #'
 #' @examples
-#' library(tidyverse)
-#' tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
+#' tibble::tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
 #'   add_pick(c(148,776)) %>%
 #'   plot_pick(x1, y1)
 
@@ -147,8 +145,8 @@ plot_pick <- function(df, x, y) {
 
   generic_df(df, !!x, !!y) %>%
     dplyr::mutate(peak = df$peak, nudge_dist = (max(y) - min(y))/100 * 3) %>%
-    ggplot2::ggplot(ggplot2::aes(x, y)) +
+    ggplot2::ggplot(ggplot2::aes_(~x, ~y)) +
     ggplot2::geom_line() +
-    ggplot2::geom_point(data = . %>% dplyr::filter(peak), ggplot2::aes(x, y), size = 2, color = "red") +
-    ggplot2::geom_text(data = . %>% dplyr::filter(peak), ggplot2::aes(x, y + nudge_dist, label = x), color = "red")
+    ggplot2::geom_point(data = . %>% dplyr::filter(peak), ggplot2::aes_(~x, ~y), size = 2, color = "red") +
+    ggplot2::geom_text(data = . %>% dplyr::filter(peak), ggplot2::aes_(~x, ~y + nudge_dist, label = x), color = "red")
 }

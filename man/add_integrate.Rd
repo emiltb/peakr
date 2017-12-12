@@ -2,13 +2,28 @@
 % Please edit documentation in R/integrate.R
 \name{add_integrate}
 \alias{add_integrate}
-\title{Title}
+\title{Add integral parameters to tibble}
 \usage{
 add_integrate(df, x, y, x_low, x_high, p = 1, span = 0.05)
 }
 \arguments{
-\item{df}{}
+\item{df}{Tibble containing the 2D data to integrate}
+
+\item{x}{Column in df containing x-values}
+
+\item{y}{Column in df containing y-values}
+
+\item{x_low}{Lower limit of integration}
+
+\item{x_high}{Upper limit of integration}
+
+\item{p}{Degree of polynomial used in background subtraction}
+
+\item{span}{Span of the set of points used to fit the background}
+}
+\value{
+Returns a tibble with the original data and integral parameters and results as the integrate attribute
 }
 \description{
-Title
+Used for reproducibility between running the interactive gadget and running an analysis later on.
 }

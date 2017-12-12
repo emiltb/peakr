@@ -20,8 +20,7 @@ A ggplot
 Plot a dataset contain defined peaks
 }
 \examples{
-library(tidyverse)
-tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) \%>\%
+tibble::tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) \%>\%
   add_pick(c(148,776)) \%>\%
   plot_pick(x1, y1)
 }

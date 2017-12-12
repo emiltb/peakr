@@ -2,13 +2,22 @@
 % Please edit documentation in R/integrate.R
 \name{find_endpoints}
 \alias{find_endpoints}
-\title{Title}
+\title{Select the points to be used for background fitting}
 \usage{
-find_endpoints(data, x_low, x_high, span)
+find_endpoints(df, x_low, x_high, span)
 }
 \arguments{
-\item{span}{}
+\item{df}{Tibble containing the 2D data to integrate}
+
+\item{x_low}{Lower limit of integration}
+
+\item{x_high}{Upper limit of integration}
+
+\item{span}{Span of the set of points used to fit the background}
+}
+\value{
+A tibble containing the endpoints to be used for background fitting
 }
 \description{
-Title
+Select the points to be used for background fitting
 }

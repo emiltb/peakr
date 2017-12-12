@@ -1,22 +1,23 @@
-#' area_picker
+#' Peak integrator
 #'
-#' @param df
+#' @param df Tibble containing the 2D data to integrate
+#' @param x Column in df containing x-values
+#' @param y Column in df containing y-values
 #'
+#' @return Returns a tibble with the original data and the result of the operation, as well as adding code for reproducibility to the clipboard.
 #' @export
 #'
 #' @examples
-#' library(tidyverse)
-#'
+#' library(magrittr)
 #' set.seed(123)
-#' df <- tibble(x1 = seq(0.001, 10, 0.01), y1 = sin(2*x1)^4/(x1)) %>%
-#'   mutate(y1 = y1 + rnorm(n(), mean = 0.01, sd = 0.1))
+#' df <- tibble::tibble(x1 = seq(0.001, 10, 0.01), y1 = sin(2*x1)^4/(x1)) %>%
+#'   dplyr::mutate(y1 = y1 + rnorm(n(), mean = 0.01, sd = 0.1))
 #'
-#' peakr::peak_integrate(df, x1, y1)
+#' #peakr::peak_integrate(df, x1, y1)
 #'
 #' df <- df %>% peakr::add_integrate(x1, y1, x_low = 0.001, x_high = 3.3, p = 1, span = 0.05)
 #'
 #' df %>% peakr::plot_integrate(x1, y1)
-
 
 peak_integrate <- function(df, x, y) {
   #requireNamespace("shiny", quietly = TRUE)
@@ -66,14 +67,19 @@ peak_integrate <- function(df, x, y) {
 }
 
 
-#' Title
+#' Add integral parameters to tibble
 #'
-#' @param df
+#' Used for reproducibility between running the interactive gadget and running an analysis later on.
 #'
-#' @return
+#' @inheritParams peak_integrate
+#' @param x_low Lower limit of integration
+#' @param x_high Upper limit of integration
+#' @param p Degree of polynomial used in background subtraction
+#' @param span Span of the set of points used to fit the background
+#'
+#' @return Returns a tibble with the original data and integral parameters and results as the integrate attribute
 #' @export
 #'
-#' @examples
 add_integrate <- function(df, x, y, x_low, x_high, p = 1, span = 0.05) {
   if (x_low > x_high) stop("x1 must be smaller than x2")
   if (span < 0) stop("span cannot be negative")
@@ -89,7 +95,7 @@ add_integrate <- function(df, x, y, x_low, x_high, p = 1, span = 0.05) {
     dplyr::mutate(background = ifelse(dplyr::between(!!x, x_low, x_high), background$bg, NA))
 
   integral <- df %>%
-    filter(!is.na(background)) %>%
+    dplyr::filter(!is.na(background)) %>%
     dplyr::mutate(y = !!y, x = !!x, subt = y - background) %>%
     dplyr::summarise(pracma::trapz(x, subt)) %>%
     as.numeric()
@@ -105,14 +111,13 @@ add_integrate <- function(df, x, y, x_low, x_high, p = 1, span = 0.05) {
   return_data
 }
 
-#' Title
+#' Plot results of peak integration
 #'
-#' @param df
+#' @inheritParams peak_pick
 #'
-#' @return
+#' @return A plot displaying the area of integration
 #' @export
 #'
-#' @examples
 plot_integrate <- function(df, x, y) {
   x <- rlang::enquo(x)
   y <- rlang::enquo(y)
@@ -121,49 +126,38 @@ plot_integrate <- function(df, x, y) {
   params <- attr(df, "integrate")
 
   data %>%
-    mutate(background = df$background) %>%
-    ggplot2::ggplot(ggplot2::aes(x, y)) +
+    dplyr::mutate(background = df$background) %>%
+    ggplot2::ggplot(ggplot2::aes_(~x, ~y)) +
     ggplot2::geom_line() +
-    ggplot2::geom_point(data = find_endpoints(data, params$x_low, params$x_high, params$span), aes(x, y), color = "red") +
-    ggplot2::geom_line(data = . %>% filter(!is.na(background)), aes(x, background), color = "green") +
-    geom_ribbon(data = . %>% filter(!is.na(background)), aes(x = x, ymin = background, ymax = y, fill = y - background > 0), alpha = 0.25) +
-    theme(legend.position = "none") +
-    annotate("text", x = Inf, y = Inf, hjust=1, vjust=1, label = attr(df, "integrate")$integral)
+    ggplot2::geom_point(data = find_endpoints(data, params$x_low, params$x_high, params$span), ggplot2::aes_(~x, ~y), color = "red") +
+    ggplot2::geom_line(data = . %>% dplyr::filter(!is.na(background)), ggplot2::aes_(~x, ~background), color = "green") +
+    ggplot2::geom_ribbon(data = . %>% dplyr::filter(!is.na(background)), ggplot2::aes_(x = ~x, ymin = ~background, ymax = ~y, fill = ~(y - background > 0)), alpha = 0.25) +
+    ggplot2::theme(legend.position = "none") +
+    ggplot2::annotate("text", x = Inf, y = Inf, hjust=1, vjust=1, label = attr(df, "integrate")$integral)
 }
 
-#' Title
+#' Fit a p-degree polynomial to the selected endpoints
 #'
-#' @param data
-#' @param x_low
-#' @param x_high
-#' @param p
-#' @param span
+#' @inheritParams add_integrate
 #'
-#' @return
-#' @export
+#' @return A list containing the fitted polynomial as well as the endpoints used for fitting.
 #'
-#' @examples
-find_background <- function(data, x_low, x_high, p, span) {
-  bg_data <- find_endpoints(data, x_low, x_high, span)
-  bg_fit <- lm(y ~ poly(x,p), data = bg_data)
+find_background <- function(df, x_low, x_high, p, span) {
+  bg_data <- find_endpoints(df, x_low, x_high, span)
+  bg_fit <- stats::lm(y ~ stats::poly(x,p), data = bg_data)
 
-  list(bg = data %>% predict(bg_fit, .), bg_data = bg_data)
+  list(bg = df %>% stats::predict(bg_fit, .), bg_data = bg_data)
 }
 
-#' Title
+#' Select the points to be used for background fitting
 #'
-#' @param data
-#' @param x_low
-#' @param x_high
-#' @param span
+#' @inheritParams add_integrate
 #'
-#' @return
-#' @export
+#' @return A tibble containing the endpoints to be used for background fitting
 #'
-#' @examples
-find_endpoints <- function(data, x_low, x_high, span) {
-  seg1 <- data %>% dplyr::filter(dplyr::between(x, x_low - span, x_low + span))
-  seg2 <- data %>% dplyr::filter(dplyr::between(x, x_high - span, x_high + span))
+find_endpoints <- function(df, x_low, x_high, span) {
+  seg1 <- df %>% dplyr::filter(dplyr::between(x, x_low - span, x_low + span))
+  seg2 <- df %>% dplyr::filter(dplyr::between(x, x_high - span, x_high + span))
 
   dplyr::bind_rows(seg1, seg2)
 }
