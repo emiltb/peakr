@@ -13,6 +13,15 @@ peak_integrate(df, x, y)
 area_picker
 }
 \examples{
-df <- echem_read(system.file('extdata/cv/cv_example.txt', package = 'osc'))
-df <- area_picker(df)
+library(tidyverse)
+
+set.seed(123)
+df <- tibble(x1 = seq(0.001, 10, 0.01), y1 = sin(2*x1)^4/(x1)) \%>\%
+  mutate(y1 = y1 + rnorm(n(), mean = 0.01, sd = 0.1))
+
+peakr::peak_integrate(df, x1, y1)
+
+df <- df \%>\% peakr::add_integrate(x1, y1, x_low = 0.001, x_high = 3.3, p = 1, span = 0.05)
+
+df \%>\% peakr::plot_integrate(x1, y1)
 }

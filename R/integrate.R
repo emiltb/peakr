@@ -5,8 +5,18 @@
 #' @export
 #'
 #' @examples
-#' df <- echem_read(system.file('extdata/cv/cv_example.txt', package = 'osc'))
-#' df <- area_picker(df)
+#' library(tidyverse)
+#'
+#' set.seed(123)
+#' df <- tibble(x1 = seq(0.001, 10, 0.01), y1 = sin(2*x1)^4/(x1)) %>%
+#'   mutate(y1 = y1 + rnorm(n(), mean = 0.01, sd = 0.1))
+#'
+#' peakr::peak_integrate(df, x1, y1)
+#'
+#' df <- df %>% peakr::add_integrate(x1, y1, x_low = 0.001, x_high = 3.3, p = 1, span = 0.05)
+#'
+#' df %>% peakr::plot_integrate(x1, y1)
+
 
 peak_integrate <- function(df, x, y) {
   #requireNamespace("shiny", quietly = TRUE)
@@ -39,15 +49,17 @@ peak_integrate <- function(df, x, y) {
       data %>% add_integrate(x, y, x_low = input$x1[1], x_high = input$x1[2], p = input$poly, span = input$span) %>% plot_integrate(x, y)
     })
     shiny::observeEvent(input$done, {
-      # a <- area(df, sw = input$sweep, x1 = input$x1[1], x2 = input$x1[2], p = input$poly, span = input$span)
-      # area_params <- attr(a, "area")
-      # cat(paste0("\nArea of ", prettyNum(area_params$Q, digits = 3, format = "fg"), " C found between ", area_params$x1 , " V and ", area_params$x2 , " V.\n"))
-      # cat("The area() function below has been copied to the clipboard!\n")
-      # cat("Please paste it in your script for reproducibility.\n")
-      # res_string = paste0(input_name, " <- area(",input_name,", sw = ", input$sweep, ", x1 = ", input$x1[1], ", x2 = ", input$x1[2], ", p = ", input$poly, ", span = ", input$span, ")")
-      # cat(paste0("    ", res_string, "\n"))
-      # clipr::write_clip(res_string, return_new = FALSE)
-      shiny::stopApp(returnValue = invisible(1))
+      return_data <- df %>% add_integrate(!!x, !!y, x_low = input$x1[1], x_high = input$x1[2], p = input$poly, span = input$span)
+      params <- attr(return_data, "integrate")
+
+      message("\nArea of ", params$integral," found between ", params$x_low, " and ",  params$x_high)
+      message("The add_integrate() function below has been copied to the clipboard!")
+      message("Please paste it in your script for reproducibility.")
+      res_string = paste0(input_name, ' <- ', input_name,' %>% peakr::add_integrate(',rlang::quo_name(x),', ',rlang::quo_name(y),', x_low = ', params$x_low ,', x_high = ', params$x_high, ', p = ', params$p, ', span = ', params$span,')')
+      message("\t", res_string)
+      clipr::write_clip(res_string, return_new = FALSE)
+
+      shiny::stopApp(returnValue = invisible(return_data))
     })
   }
   shiny::runGadget(ui, server)

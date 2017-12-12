@@ -32,7 +32,7 @@ df <- tibble(x = seq(0.001, 10, 0.01), y = sin(10*x)^4/(x)) \%>\%
 
 peakr::peak_pick(df, x, y)
 
-df <- df \%>\% peakr::add_pick(c(14,15,47,48,80,112,143))
+df <- df \%>\% peakr::add_pick(c(14,48,80,112,143))
 
 # After adding peaks, the plot from the gadget can be reproduced using plot_pick()
 df \%>\% peakr::plot_pick(x, y)
