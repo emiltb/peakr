@@ -4,7 +4,7 @@
 \alias{add_integrate}
 \title{Title}
 \usage{
-add_integrate(df)
+add_integrate(df, x, y, x_low, x_high, p = 1, span = 0.05)
 }
 \arguments{
 \item{df}{}

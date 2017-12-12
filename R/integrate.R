@@ -65,35 +65,29 @@ peak_integrate <- function(df, x, y) {
 add_integrate <- function(df, x, y, x_low, x_high, p = 1, span = 0.05) {
   if (x_low > x_high) stop("x1 must be smaller than x2")
   if (span < 0) stop("span cannot be negative")
-  span <- span / 2
 
   x = rlang::enquo(x)
   y = rlang::enquo(y)
 
   data <- generic_df(df, !!x, !!y)
 
-  seg1 <- data %>% dplyr::filter(dplyr::between(x, x_low - span, x_low + span))
-  seg2 <- data %>% dplyr::filter(dplyr::between(x, x_high - span, x_high + span))
-
-  bg_data <- dplyr::bind_rows(seg1, seg2)
-
-  bg_fit <- lm(y ~ poly(x,p), data = bg_data)
-
-  background <- data %>%
-    predict(bg_fit, .)
+  background <- find_background(data, x_low, x_high, p, span)
 
   df <- df %>%
-    dplyr::mutate(background = ifelse(dplyr::between(!!x, x_low, x_high), background, NA))
+    dplyr::mutate(background = ifelse(dplyr::between(!!x, x_low, x_high), background$bg, NA))
 
-  Q <- df %>%
+  integral <- df %>%
     filter(!is.na(background)) %>%
     dplyr::mutate(y = !!y, x = !!x, subt = y - background) %>%
     dplyr::summarise(pracma::trapz(x, subt)) %>%
     as.numeric()
 
   attr(df, "integrate") <- list(
-    bg_data = bg_data,
-    integral = Q
+    integral = integral,
+    x_low = x_low,
+    x_high = x_high,
+    p = p,
+    span = span
   )
   return_data <- df
   return_data
@@ -111,15 +105,53 @@ plot_integrate <- function(df, x, y) {
   x <- rlang::enquo(x)
   y <- rlang::enquo(y)
 
-  bg_data <- attr(df, "integrate")$bg_data
+  data <- generic_df(df, !!x, !!y)
+  params <- attr(df, "integrate")
 
-  generic_df(df, !!x, !!y) %>%
+  data %>%
     mutate(background = df$background) %>%
     ggplot2::ggplot(ggplot2::aes(x, y)) +
     ggplot2::geom_line() +
-    ggplot2::geom_point(data = bg_data, aes(x, y), color = "red") +
-    ggplot2::geom_line(aes(x, background), color = "green") +
+    ggplot2::geom_point(data = find_endpoints(data, params$x_low, params$x_high, params$span), aes(x, y), color = "red") +
+    ggplot2::geom_line(data = . %>% filter(!is.na(background)), aes(x, background), color = "green") +
     geom_ribbon(data = . %>% filter(!is.na(background)), aes(x = x, ymin = background, ymax = y, fill = y - background > 0), alpha = 0.25) +
     theme(legend.position = "none") +
     annotate("text", x = Inf, y = Inf, hjust=1, vjust=1, label = attr(df, "integrate")$integral)
+}
+
+#' Title
+#'
+#' @param data
+#' @param x_low
+#' @param x_high
+#' @param p
+#' @param span
+#'
+#' @return
+#' @export
+#'
+#' @examples
+find_background <- function(data, x_low, x_high, p, span) {
+  bg_data <- find_endpoints(data, x_low, x_high, span)
+  bg_fit <- lm(y ~ poly(x,p), data = bg_data)
+
+  list(bg = data %>% predict(bg_fit, .), bg_data = bg_data)
+}
+
+#' Title
+#'
+#' @param data
+#' @param x_low
+#' @param x_high
+#' @param span
+#'
+#' @return
+#' @export
+#'
+#' @examples
+find_endpoints <- function(data, x_low, x_high, span) {
+  seg1 <- data %>% dplyr::filter(dplyr::between(x, x_low - span, x_low + span))
+  seg2 <- data %>% dplyr::filter(dplyr::between(x, x_high - span, x_high + span))
+
+  dplyr::bind_rows(seg1, seg2)
 }

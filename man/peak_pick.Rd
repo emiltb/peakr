@@ -25,11 +25,15 @@ When you are finished press "Done". The gadget will place a piece of code in you
 }
 \examples{
 library(tidyverse)
-df <- tibble(x1 = seq(0.1, 25, 0.01), y1 = sin(x1)^2/x1)
 
-peak_pick(df, x1, y1)
-df <- df \%>\% add_pick(c(108,451,770,1086,1401,1716,2031,2345))
+set.seed(123)
+df <- tibble(x = seq(0.001, 10, 0.01), y = sin(10*x)^4/(x)) \%>\%
+  mutate(y = y + rnorm(n(), mean = 0.01, sd = 0.1))
+
+peakr::peak_pick(df, x, y)
+
+df <- df \%>\% peakr::add_pick(c(14,15,47,48,80,112,143))
 
 # After adding peaks, the plot from the gadget can be reproduced using plot_pick()
-df \%>\% plot_pick(x1, y1)
+df \%>\% peakr::plot_pick(x, y)
 }
