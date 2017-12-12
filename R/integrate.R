@@ -13,7 +13,9 @@
 #' df <- tibble::tibble(x1 = seq(0.001, 10, 0.01), y1 = sin(2*x1)^4/(x1)) %>%
 #'   dplyr::mutate(y1 = y1 + rnorm(n(), mean = 0.01, sd = 0.1))
 #'
-#' #peakr::peak_integrate(df, x1, y1)
+#' \dontrun{
+#' peakr::peak_integrate(df, x1, y1)
+#' }
 #'
 #' df <- df %>% peakr::add_integrate(x1, y1, x_low = 0.001, x_high = 3.3, p = 1, span = 0.05)
 #'
