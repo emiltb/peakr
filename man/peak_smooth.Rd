@@ -12,3 +12,15 @@ peak_smooth(df, x, y)
 \description{
 Smoothing
 }
+\examples{
+library(tidyverse)
+
+df <- tibble(x1 = 1:1000, y1 = sin(2*pi*(x1)/200)) \%>\%
+  mutate(y2 = y1 + rnorm(n())/10)
+
+peakr::peak_smooth(df, x1, y2)
+
+df \%>\% peakr::add_smooth(y2, fl = 95)
+
+df \%>\% peakr::add_smooth(y2, fl = 95) \%>\% peakr::plot_smooth(x1, y2)
+}

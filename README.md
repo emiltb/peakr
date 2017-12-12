@@ -1,17 +1,22 @@
 # peakr: Interactive tools for simple datasets
 
-`peakr` contains gadgets for common operations on data obtained in natural sciences (e.g. spectra and time series). The aim is to ease common operations that would otherwise need a lot of iterative refinements in an analysis script. 
+[![Build Status](https://travis-ci.org/emiltb/peakr.svg?branch=master)](https://travis-ci.org/emiltb/peakr)
+[![CRAN\_Release\_Badge](https://www.r-pkg.org/badges/version-ago/peakr)](https://CRAN.R-project.org/package=peakr)
+[![CRAN\_Download\_Badge](http://cranlogs.r-pkg.org/badges/peakr)](https://CRAN.R-project.org/package=peakr)
+
+
+`peakr` contains gadgets for common operations on data obtained in natural sciences (e.g. spectra and time series). The aim is to ease common operations that would otherwise need a lot of iterative refinements in an analysis script.
 
 Hopefully `peakr` can also be used to make the transition into R easier and more attractive for beginners.
 
 All functions try to encourage reproducibility by returning suggested code to produce the same result as in the gadget.
 
 ## Gadgets (`peak_<function>(df, x, y, ...)`)
-All gadgets follows a common naming scheme `peak_<function>(df, x, y, ...)`. `df` is a dataframe with a dataset, `x` and `y` specify columns in the dataset and `...` can be a range of function specific parameters to fine-tune behaviour. 
+All gadgets follows a common naming scheme `peak_<function>(df, x, y, ...)`. `df` is a dataframe with a dataset, `x` and `y` specify columns in the dataset and `...` can be a range of function specific parameters to fine-tune behaviour.
 
 The following gadgets are available:
 
-* `peak_pick()`: Peak picking in dataset, guided by a simple algorithm to help get the highest points on a specific peak. Other packages contain algorithms to find peaks in data, but often require a lot of fine-tuning to only find real peaks. This gadget is suitable for e.g. the student who has to report a few spectra in a report or lab journal. 
+* `peak_pick()`: Peak picking in dataset, guided by a simple algorithm to help get the highest points on a specific peak. Other packages contain algorithms to find peaks in data, but often require a lot of fine-tuning to only find real peaks. This gadget is suitable for e.g. the student who has to report a few spectra in a report or lab journal.
 * `peak_integrate()`: Peak integration
 * `peak_subtract()`: Baseline subtraction
 * `peak_normalise()`: Normalisation (i.e. with respect to peak intensity)
