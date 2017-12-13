@@ -100,7 +100,7 @@ add_integrate <- function(df, x, y, x_low, x_high, p = 1, span = 0.05) {
   integral <- df %>%
     dplyr::filter(!is.na(background)) %>%
     dplyr::mutate(y = !!y, x = !!x, subt = y - background) %>%
-    dplyr::summarise(pracma::trapz(x, subt)) %>%
+    dplyr::summarise(pracma::trapz(.$x, .$subt)) %>%
     as.numeric()
 
   attr(df, "integrate") <- list(
@@ -133,8 +133,8 @@ plot_integrate <- function(df, x, y) {
     ggplot2::ggplot(ggplot2::aes_(~x, ~y)) +
     ggplot2::geom_line() +
     ggplot2::geom_point(data = find_endpoints(data, params$x_low, params$x_high, params$span), ggplot2::aes_(~x, ~y), color = "red") +
-    ggplot2::geom_line(data = . %>% dplyr::filter(!is.na(background)), ggplot2::aes_(~x, ~background), color = "green") +
-    ggplot2::geom_ribbon(data = . %>% dplyr::filter(!is.na(background)), ggplot2::aes_(x = ~x, ymin = ~background, ymax = ~y, fill = ~(y - background > 0)), alpha = 0.25) +
+    ggplot2::geom_line(data = . %>% dplyr::filter(!is.na(.$background)), ggplot2::aes_(~x, ~background), color = "green") +
+    ggplot2::geom_ribbon(data = . %>% dplyr::filter(!is.na(.$background)), ggplot2::aes_(x = ~x, ymin = ~background, ymax = ~y, fill = ~(y - background > 0)), alpha = 0.25) +
     ggplot2::theme(legend.position = "none") +
     ggplot2::annotate("text", x = Inf, y = Inf, hjust=1, vjust=1, label = attr(df, "integrate")$integral)
 }
@@ -159,8 +159,8 @@ find_background <- function(df, x_low, x_high, p, span) {
 #' @return A tibble containing the endpoints to be used for background fitting
 #'
 find_endpoints <- function(df, x_low, x_high, span) {
-  seg1 <- df %>% dplyr::filter(dplyr::between(x, x_low - span, x_low + span))
-  seg2 <- df %>% dplyr::filter(dplyr::between(x, x_high - span, x_high + span))
+  seg1 <- df %>% dplyr::filter(dplyr::between(.$x, x_low - span, x_low + span))
+  seg2 <- df %>% dplyr::filter(dplyr::between(.$x, x_high - span, x_high + span))
 
   dplyr::bind_rows(seg1, seg2)
 }
