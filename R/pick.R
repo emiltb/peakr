@@ -151,5 +151,5 @@ plot_pick <- function(df, x, y) {
     ggplot2::ggplot(ggplot2::aes_(~x, ~y)) +
     ggplot2::geom_line() +
     ggplot2::geom_point(data = . %>% dplyr::filter(peak), ggplot2::aes_(~x, ~y), size = 2, color = "red") +
-    ggplot2::geom_text(data = . %>% dplyr::filter(peak), ggplot2::aes_(~x, ~y + nudge_dist, label = x), color = "red")
+    ggplot2::geom_text(data = . %>% dplyr::filter(peak), ggplot2::aes_(~x, ~(y + nudge_dist), label = ~x), color = "red")
 }
