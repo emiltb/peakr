@@ -20,9 +20,10 @@ Returns a tibble with the original data and the result of the operation, as well
 Applies a Savitzky-Golay filter to smooth the data. The filter width can be selected interactively.
 }
 \examples{
-library(magrittr)
-df <- tibble::tibble(x1 = 1:1000, y1 = sin(2*pi*(x1)/200)) \%>\%
-  dplyr::mutate(y2 = y1 + rnorm(n())/10)
+library(tibble)
+library(dplyr)
+df <- tibble(x1 = 1:1000, y1 = sin(2*pi*(x1)/200)) \%>\%
+  mutate(y2 = y1 + rnorm(n())/10)
 
 \dontrun{
 peakr::peak_smooth(df, x1, y2)

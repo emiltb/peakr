@@ -8,9 +8,10 @@
 #' @export
 #'
 #' @examples
-#' library(magrittr)
-#' df <- tibble::tibble(x1 = 1:1000, y1 = sin(2*pi*(x1)/200)) %>%
-#'   dplyr::mutate(y2 = y1 + rnorm(n())/10)
+#' library(tibble)
+#' library(dplyr)
+#' df <- tibble(x1 = 1:1000, y1 = sin(2*pi*(x1)/200)) %>%
+#'   mutate(y2 = y1 + rnorm(n())/10)
 #'
 #' \dontrun{
 #' peakr::peak_smooth(df, x1, y2)
@@ -65,7 +66,6 @@ peak_smooth <- function(df, x, y) {
 #' @param fl Filter length for the Savitzky-Golay filter. Must be an odd integer.
 #'
 #' @return Returns the original dataframe with an addition column containing the smoothed data
-#' @importFrom rlang :=
 #' @export
 
 add_smooth <- function(df, y, fl) {

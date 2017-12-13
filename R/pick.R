@@ -13,14 +13,13 @@
 #' @return The original dataset with an additional column "peak", which indicates TRUE/FALSE if the given row is a peak.
 #' @export
 #'
-#' @importFrom magrittr %>%
-#' @importFrom rlang !!
 #'
 #' @examples
-#' library(magrittr)
+#' library(tibble)
+#' library(dplyr)
 #' set.seed(123)
-#' df <- tibble::tibble(x = seq(0.001, 10, 0.01), y = sin(10*x)^4/(x)) %>%
-#'   dplyr::mutate(y = y + rnorm(n(), mean = 0.01, sd = 0.1))
+#' df <- tibble(x = seq(0.001, 10, 0.01), y = sin(10*x)^4/(x)) %>%
+#'   mutate(y = y + rnorm(n(), mean = 0.01, sd = 0.1))
 #'
 #' \dontrun{
 #' peakr::peak_pick(df, x, y)
@@ -115,8 +114,9 @@ peak_pick <- function(df, x, y, find_nearest = TRUE) {
 #' @export
 #'
 #' @examples
-#' library(magrittr)
-#' tibble::tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
+#' library(tibble)
+#' library(dplyr)
+#' tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
 #'   add_pick(c(148,776))
 
 add_pick <- function(df, indices) {
@@ -135,8 +135,10 @@ add_pick <- function(df, indices) {
 #' @export
 #'
 #' @examples
-#' library(magrittr)
-#' tibble::tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
+#' library(tibble)
+#' library(dplyr)
+#'
+#' tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
 #'   add_pick(c(148,776)) %>%
 #'   plot_pick(x1, y1)
 

@@ -17,7 +17,6 @@ Imports: ggplot2,
     clipr,
     rlang,
     pracma,
-    magrittr,
     stats,
     patchwork
 Remotes: thomasp85/patchwork

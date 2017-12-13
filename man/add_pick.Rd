@@ -18,7 +18,8 @@ tbl_df with an additional column indicating whether the row is a peak
 Add peak indicators at the given indices
 }
 \examples{
-library(magrittr)
-tibble::tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) \%>\%
+library(tibble)
+library(dplyr)
+tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) \%>\%
   add_pick(c(148,776))
 }
