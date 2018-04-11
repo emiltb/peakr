@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/emiltb/peakr.svg?branch=master)](https://travis-ci.org/emiltb/peakr)
 [![CRAN\_Release\_Badge](https://www.r-pkg.org/badges/version-ago/peakr)](https://CRAN.R-project.org/package=peakr)
 [![CRAN\_Download\_Badge](https://cranlogs.r-pkg.org/badges/grand-total/peakr)](https://CRAN.R-project.org/package=peakr)
+[![Coverage status](https://codecov.io/gh/emiltb/peakr/branch/master/graph/badge.svg)](https://codecov.io/github/emiltb/peakr?branch=master)
 
 
 `peakr` contains gadgets for common operations on data obtained in natural sciences (e.g. spectra and time series). The aim is to ease common operations that would otherwise need a lot of iterative refinements in an analysis script.

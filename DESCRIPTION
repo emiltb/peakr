@@ -7,7 +7,9 @@ Depends: R (>= 3.4.2)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Suggests: testthat
+Suggests: 
+    testthat,
+    covr
 RoxygenNote: 6.0.1
 Imports: ggplot2,
     dplyr,
@@ -17,6 +19,4 @@ Imports: ggplot2,
     clipr,
     rlang,
     pracma,
-    stats,
-    patchwork
-Remotes: thomasp85/patchwork
+    stats

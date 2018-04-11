@@ -98,5 +98,5 @@ plot_smooth <- function(df, x, y) {
   g2 <- ggplot2::ggplot(df, ggplot2::aes_(~x, ~resid)) +
     ggplot2::geom_line()
 
-  patchwork::wrap_plots(g1, g2, ncol = 1, heights = c(4,1))
+  #patchwork::wrap_plots(g1, g2, ncol = 1, heights = c(4,1))
 }
