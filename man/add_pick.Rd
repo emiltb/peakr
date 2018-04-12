@@ -4,12 +4,12 @@
 \alias{add_pick}
 \title{Add peak indicators at the given indices}
 \usage{
-add_pick(df, indices)
+add_pick(data, indices)
 }
 \arguments{
-\item{df}{Dataframe with dataset (e.g. x- and y-values of a spectrum)}
-
 \item{indices}{Vector of integer indices indicating peak positions}
+
+\item{df}{Dataframe with dataset (e.g. x- and y-values of a spectrum)}
 }
 \value{
 tbl_df with an additional column indicating whether the row is a peak

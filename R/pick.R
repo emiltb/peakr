@@ -137,17 +137,17 @@ peak_pick_old <- function(df, x, y, find_nearest = TRUE) {
 #' # After adding peaks, the plot from the gadget can be reproduced using plot_pick()
 #' df %>% peakr::plot_pick(x, y)
 
-peak_pick <- function(df, x, y, find_nearest = TRUE) {
+peak_pick <- function(data, x, y, find_nearest = TRUE) {
 
   x <- rlang::enquo(x)
   y <- rlang::enquo(y)
 
-  data <- generic_df(df, !!x, !!y)
+  #data <- generic_df(df, !!x, !!y)
 
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Select peaks by clicking on the figure below"),
     miniUI::miniContentPanel(
-      shiny::plotOutput("plot1", height = "100%", dblclick = "plot1_dblclick", brush = brushOpts(id = "plot1_brush"))
+      shiny::plotOutput("plot1", height = "100%", dblclick = "plot1_dblclick", brush = shiny::brushOpts(id = "plot1_brush"))
     )
   )
 
@@ -170,21 +170,22 @@ peak_pick <- function(df, x, y, find_nearest = TRUE) {
         #   row_to_add <- X1
         # }
         row_to_add <- X1
-        v$selectedData <- add_if_unique(v$selectedData, row_to_add)
+        v$selectedData <- add_if_unique(v$selectedData, row_to_add, !! x, !! y)
       }
     })
 
     shiny::observeEvent(input$plot1_brush, {
       X1 <- shiny::brushedPoints(data, input$plot1_brush)
 
-      X1 <- X1 %>% filter(y == max(y))
-      v$selectedData <- add_if_unique(v$selectedData, X1)
+      max_value <- max(pull(X1, !! y))
+      row_to_add <- X1 %>% filter((!!y) == max(!! y))
+      v$selectedData <- add_if_unique(v$selectedData, row_to_add, !! x, !! y)
       session$resetBrush("plot1_brush")
     })
 
     output$plot1 <- shiny::renderPlot({
-      peak_indices <- match(v$selectedData$x, data$x)
-      data %>% add_pick(peak_indices) %>% plot_pick(x, y)
+      peak_indices <- match(v$selectedData %>% pull(!! x), data %>% pull(!! x))
+      data %>% add_pick(peak_indices) %>% plot_pick(!! x, !! y)
     })
 
     shiny::observeEvent(input$done, {
@@ -208,8 +209,8 @@ peak_pick <- function(df, x, y, find_nearest = TRUE) {
 #' tibble(x1 = seq(0.1, 9, 0.01), y1 = sin(x1)) %>%
 #'   add_pick(c(148,776))
 
-add_pick <- function(df, indices) {
-  return_data <- df %>% dplyr::mutate(peak = FALSE)
+add_pick <- function(data, indices) {
+  return_data <- data %>% dplyr::mutate(peak = FALSE)
   return_data$peak[indices] <- TRUE
   return_data
 }
@@ -232,7 +233,10 @@ add_pick <- function(df, indices) {
 #'   plot_pick(x1, y1)
 
 plot_pick <- function(data, x, y) {
-  ggplot2::ggplot(data, ggplot2::aes(x, y)) + ggplot2::geom_line() +
+  x <- dplyr::enquo(x)
+  y <- dplyr::enquo(y)
+
+  ggplot2::ggplot(data, ggplot2::aes_string(rlang::quo_text(x), rlang::quo_text(y))) + ggplot2::geom_line() +
     ggplot2::geom_point(data = . %>% dplyr::filter(peak), color = "red")
 }
 

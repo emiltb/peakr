@@ -42,21 +42,6 @@ find_gradient <- function(x, y, ind) {
   (y[ind + 1] - y[ind - 1]) / (x[ind + 1] - x[ind - 1])
 }
 
-#' Return a standard dataframe with two columns (x and y)
-#'
-#' @param df Dataframe to be converted
-#' @param x Column containing x-coordinates
-#' @param y Column containing y-coordinates
-#'
-#' @return A standard tibble with the given data in two columns (x and y)
-
-generic_df <- function(df, x, y) {
-  x = rlang::enquo(x)
-  y = rlang::enquo(y)
-
-  tibble::tibble(x = dplyr::pull(df, !!x), y = dplyr::pull(df, !!y))
-}
-
 
 #' Add row to dataframe, or remove it if it already exists
 #'
@@ -65,13 +50,16 @@ generic_df <- function(df, x, y) {
 #'
 #' @return If the row in `append` exists in `original` it will be removed, otherwise it will be added to the dataframe that is returned.
 #'
-add_if_unique <- function(original, append) {
+add_if_unique <- function(original, append, x, y) {
+  x <- dplyr::enquo(x)
+  y <- dplyr::enquo(y)
   joined <- rbind(original, append)
 
   if (nrow(joined) == nrow(dplyr::distinct(joined))) {
-    ret <- rbind(original, append) %>% dplyr::arrange(x)
+    ret <- rbind(original, append) %>% dplyr::arrange(!! x)
   } else {
-    ret <- dplyr::anti_join(original, append, by = c("x", "y"))
+    ret <- suppressMessages(dplyr::anti_join(original, append))
+
   }
   ret
 }

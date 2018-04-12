@@ -4,14 +4,14 @@
 \alias{plot_pick}
 \title{Plot a dataset contain defined peaks}
 \usage{
-plot_pick(df, x, y)
+plot_pick(data, x, y)
 }
 \arguments{
-\item{df}{Any dataframe with e.g. a spectrum or similar. It must contain a column 'peak' containing TRUE/FALSE values indicating the presence of peaks.}
-
 \item{x}{The values plotted on the x-axis (e.g. wavelength)}
 
 \item{y}{The values plotted on the y-axis (e.g. intensity/counts)}
+
+\item{df}{Any dataframe with e.g. a spectrum or similar. It must contain a column 'peak' containing TRUE/FALSE values indicating the presence of peaks.}
 }
 \value{
 A ggplot
