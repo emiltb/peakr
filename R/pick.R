@@ -5,10 +5,10 @@
 #'
 #' When you are finished press "Done". The gadget will place a piece of code in your clipboard that you should paste into your script for reproducibility.
 #'
-#' @param df A tibble containing the data to pick peaks in
+#' @param data A tibble containing the data to pick peaks in
 #' @param x Column containing the x-values
 #' @param y Column containing the y-values
-#' @param find_nearest If TRUE (the default) the gadget will attempt to find the nearest peak when clicking on a point in the dataset. This is disabled by setting this option to FALSE, in which case the point nearest to the click will be selected.
+#' @param find Can be either "max" or "min". Defines what is selected when highlighting peaks. Defaults to "max".
 #'
 #' @return The original dataset with an additional column "peak", which indicates TRUE/FALSE if the given row is a peak.
 #' @export
@@ -26,13 +26,12 @@
 #' }
 #'
 #' df <- df %>% peakr::add_pick(c(14,48,80,112,143))
-
 #'
 #' # After adding peaks, the plot from the gadget can be reproduced using plot_pick()
 #' df %>% peakr::plot_pick(x, y)
 
 peak_pick <- function(data, x, y, find = "max") {
-  input_name <- deparse(substitute(df))
+  input_name <- deparse(substitute(data))
   x <- rlang::enquo(x)
   y <- rlang::enquo(y)
 
@@ -44,9 +43,6 @@ peak_pick <- function(data, x, y, find = "max") {
   } else {
     stop('find can only be "max" or "min"')
   }
-
-
-  #data <- generic_df(df, !!x, !!y)
 
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Select peaks by clicking on the figure below"),
@@ -72,18 +68,18 @@ peak_pick <- function(data, x, y, find = "max") {
     shiny::observeEvent(input$plot1_brush, {
       X1 <- shiny::brushedPoints(data, input$plot1_brush)
 
-      row_to_add <- X1 %>% filter((!!y) == selector(!! y))
+      row_to_add <- X1 %>% dplyr::filter((!!y) == selector(!! y))
       v$selectedData <- add_if_unique(v$selectedData, row_to_add, !! x, !! y)
       session$resetBrush("plot1_brush")
     })
 
     output$plot1 <- shiny::renderPlot({
-      peak_indices <- match(v$selectedData %>% pull(!! x), data %>% pull(!! x))
+      peak_indices <- match(v$selectedData %>% dplyr::pull(!! x), data %>% dplyr::pull(!! x))
       data %>% add_pick(peak_indices) %>% plot_pick(!! x, !! y)
     })
 
     shiny::observeEvent(input$done, {
-      peak_indices <- match(v$selectedData %>% pull(!! x), data %>% pull(!! x))
+      peak_indices <- match(v$selectedData %>% dplyr::pull(!! x), data %>% dplyr::pull(!! x))
       return_data <- data %>% add_pick(peak_indices)
 
       message(length(peak_indices)," peaks found in the dataset")
@@ -102,8 +98,8 @@ peak_pick <- function(data, x, y, find = "max") {
 
 #' Add peak indicators at the given indices
 #'
-#' @param df Dataframe with dataset (e.g. x- and y-values of a spectrum)
-#' @param indices Vector of integer indices indicating peak positions
+#' @inheritParams peak_pick
+#' @param indices Indices of the data to mark as peaks
 #'
 #' @return tbl_df with an additional column indicating whether the row is a peak
 #' @export
@@ -122,9 +118,7 @@ add_pick <- function(data, indices) {
 
 #' Plot a dataset contain defined peaks
 #'
-#' @param df Any dataframe with e.g. a spectrum or similar. It must contain a column 'peak' containing TRUE/FALSE values indicating the presence of peaks.
-#' @param x The values plotted on the x-axis (e.g. wavelength)
-#' @param y The values plotted on the y-axis (e.g. intensity/counts)
+#' @inheritParams peak_pick
 #'
 #' @return A ggplot
 #' @export
@@ -141,11 +135,11 @@ plot_pick <- function(data, x, y) {
   x <- dplyr::enquo(x)
   y <- dplyr::enquo(y)
 
-  y_range <- data %>% pull(!! y) %>% range()
+  y_range <- data %>% dplyr::pull(!! y) %>% range()
   nudge_dist <- (y_range[2] - y_range[1]) * 0.03
 
   ggplot2::ggplot(data, ggplot2::aes_string(rlang::quo_text(x), rlang::quo_text(y))) + ggplot2::geom_line() +
-    ggplot2::geom_point(data = . %>% dplyr::filter(peak), color = "red") +
-    ggplot2::geom_text(data = . %>% dplyr::filter(peak), ggplot2::aes_string(rlang::quo_text(x), rlang::quo_text(y), label = rlang::quo_text(x)), color = "red", nudge_y = nudge_dist)
+    ggplot2::geom_point(data = . %>% dplyr::filter(.$peak), color = "red") +
+    ggplot2::geom_text(data = . %>% dplyr::filter(.$peak), ggplot2::aes_string(rlang::quo_text(x), rlang::quo_text(y), label = rlang::quo_text(x)), color = "red", nudge_y = nudge_dist)
 }
 

@@ -7,13 +7,13 @@
 peak_pick(data, x, y, find = "max")
 }
 \arguments{
+\item{data}{A tibble containing the data to pick peaks in}
+
 \item{x}{Column containing the x-values}
 
 \item{y}{Column containing the y-values}
 
-\item{df}{A tibble containing the data to pick peaks in}
-
-\item{find_nearest}{If TRUE (the default) the gadget will attempt to find the nearest peak when clicking on a point in the dataset. This is disabled by setting this option to FALSE, in which case the point nearest to the click will be selected.}
+\item{find}{Can be either "max" or "min". Defines what is selected when highlighting peaks. Defaults to "max".}
 }
 \value{
 The original dataset with an additional column "peak", which indicates TRUE/FALSE if the given row is a peak.

@@ -7,9 +7,9 @@
 add_pick(data, indices)
 }
 \arguments{
-\item{indices}{Vector of integer indices indicating peak positions}
+\item{data}{A tibble containing the data to pick peaks in}
 
-\item{df}{Dataframe with dataset (e.g. x- and y-values of a spectrum)}
+\item{indices}{Indices of the data to mark as peaks}
 }
 \value{
 tbl_df with an additional column indicating whether the row is a peak

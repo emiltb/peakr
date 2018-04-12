@@ -7,11 +7,11 @@
 plot_pick(data, x, y)
 }
 \arguments{
-\item{x}{The values plotted on the x-axis (e.g. wavelength)}
+\item{data}{A tibble containing the data to pick peaks in}
 
-\item{y}{The values plotted on the y-axis (e.g. intensity/counts)}
+\item{x}{Column containing the x-values}
 
-\item{df}{Any dataframe with e.g. a spectrum or similar. It must contain a column 'peak' containing TRUE/FALSE values indicating the presence of peaks.}
+\item{y}{Column containing the y-values}
 }
 \value{
 A ggplot

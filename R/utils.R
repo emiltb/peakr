@@ -3,6 +3,7 @@
 #'
 #' @param original The input dataframe
 #' @param append A dataframe containing the same columns as `original` and 1 row
+#' @inheritParams peak_pick
 #'
 #' @return If the row in `append` exists in `original` it will be removed, otherwise it will be added to the dataframe that is returned.
 #'

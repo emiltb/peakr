@@ -10,6 +10,10 @@ add_if_unique(original, append, x, y)
 \item{original}{The input dataframe}
 
 \item{append}{A dataframe containing the same columns as `original` and 1 row}
+
+\item{x}{Column containing the x-values}
+
+\item{y}{Column containing the y-values}
 }
 \value{
 If the row in `append` exists in `original` it will be removed, otherwise it will be added to the dataframe that is returned.
