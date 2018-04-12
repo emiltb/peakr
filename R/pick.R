@@ -11,7 +11,6 @@
 #' @param find_nearest If TRUE (the default) the gadget will attempt to find the nearest peak when clicking on a point in the dataset. This is disabled by setting this option to FALSE, in which case the point nearest to the click will be selected.
 #'
 #' @return The original dataset with an additional column "peak", which indicates TRUE/FALSE if the given row is a peak.
-#' @export
 #'
 #'
 #' @examples
@@ -31,7 +30,7 @@
 #' # After adding peaks, the plot from the gadget can be reproduced using plot_pick()
 #' df %>% peakr::plot_pick(x, y)
 
-peak_pick <- function(df, x, y, find_nearest = TRUE) {
+peak_pick_old <- function(df, x, y, find_nearest = TRUE) {
   #requireNamespace("shiny", quietly = TRUE)
   #requireNamespace("miniUI", quietly = TRUE)
   input_name <- deparse(substitute(df))
@@ -105,6 +104,96 @@ peak_pick <- function(df, x, y, find_nearest = TRUE) {
   shiny::runGadget(ui, server)
 }
 
+#' Pick peaks in datasets interactively
+#'
+#' @description
+#' `peak_pick()` is an interactive tool (a shinyGadget) for finding peaks in datasets (e.g. a spectrum). After loading the dataset and specifying the columns, you can easily select peaks by clicking on the dataset. The gadget will automatically try to determine the nearest peak to the click and select it. Peaks can be deselected by clicking again.
+#'
+#' When you are finished press "Done". The gadget will place a piece of code in your clipboard that you should paste into your script for reproducibility.
+#'
+#' @param df A tibble containing the data to pick peaks in
+#' @param x Column containing the x-values
+#' @param y Column containing the y-values
+#' @param find_nearest If TRUE (the default) the gadget will attempt to find the nearest peak when clicking on a point in the dataset. This is disabled by setting this option to FALSE, in which case the point nearest to the click will be selected.
+#'
+#' @return The original dataset with an additional column "peak", which indicates TRUE/FALSE if the given row is a peak.
+#' @export
+#'
+#'
+#' @examples
+#' library(tibble)
+#' library(dplyr)
+#' set.seed(123)
+#' df <- tibble(x = seq(0.001, 10, 0.01), y = sin(10*x)^4/(x)) %>%
+#'   mutate(y = y + rnorm(n(), mean = 0.01, sd = 0.1))
+#'
+#' \dontrun{
+#' peakr::peak_pick(df, x, y)
+#' }
+#'
+#' df <- df %>% peakr::add_pick(c(14,48,80,112,143))
+
+#'
+#' # After adding peaks, the plot from the gadget can be reproduced using plot_pick()
+#' df %>% peakr::plot_pick(x, y)
+
+peak_pick <- function(df, x, y, find_nearest = TRUE) {
+
+  x <- rlang::enquo(x)
+  y <- rlang::enquo(y)
+
+  data <- generic_df(df, !!x, !!y)
+
+  ui <- miniUI::miniPage(
+    miniUI::gadgetTitleBar("Select peaks by clicking on the figure below"),
+    miniUI::miniContentPanel(
+      shiny::plotOutput("plot1", height = "100%", dblclick = "plot1_dblclick", brush = brushOpts(id = "plot1_brush"))
+    )
+  )
+
+  server <- function(input, output, session) {
+    v <- shiny::reactiveValues(
+      selectedData = data[0,]
+    )
+
+    shiny::observeEvent(input$plot1_dblclick, {
+      X1 <- shiny::nearPoints(data, input$plot1_dblclick, maxpoints = 1, threshold = 25)
+
+      if(nrow(X1) > 0) {
+        # if(find_nearest) {
+        #   # Find nearest peak
+        #   peak_ind <- find_peak(data$x, data$y, which(data$x == X1$x))
+        #   if (!is.na(peak_ind)) {
+        #     row_to_add <- data[peak_ind,]
+        #   }
+        # } else {
+        #   row_to_add <- X1
+        # }
+        row_to_add <- X1
+        v$selectedData <- add_if_unique(v$selectedData, row_to_add)
+      }
+    })
+
+    shiny::observeEvent(input$plot1_brush, {
+      X1 <- shiny::brushedPoints(data, input$plot1_brush)
+
+      X1 <- X1 %>% filter(y == max(y))
+      v$selectedData <- add_if_unique(v$selectedData, X1)
+      session$resetBrush("plot1_brush")
+    })
+
+    output$plot1 <- shiny::renderPlot({
+      peak_indices <- match(v$selectedData$x, data$x)
+      data %>% add_pick(peak_indices) %>% plot_pick(x, y)
+    })
+
+    shiny::observeEvent(input$done, {
+      shiny::stopApp(returnValue = invisible(return_data))
+    })
+  }
+  shiny::runGadget(ui, server)
+}
+
 #' Add peak indicators at the given indices
 #'
 #' @param df Dataframe with dataset (e.g. x- and y-values of a spectrum)
@@ -142,16 +231,21 @@ add_pick <- function(df, indices) {
 #'   add_pick(c(148,776)) %>%
 #'   plot_pick(x1, y1)
 
-plot_pick <- function(df, x, y) {
-  if (!("peak" %in% colnames(df))) stop("Column peaks not found")
-
-  x <- rlang::enquo(x)
-  y <- rlang::enquo(y)
-
-  generic_df(df, !!x, !!y) %>%
-    dplyr::mutate(peak = df$peak, nudge_dist = (max(y) - min(y))/100 * 3) %>%
-    ggplot2::ggplot(ggplot2::aes_(~x, ~y)) +
-    ggplot2::geom_line() +
-    ggplot2::geom_point(data = . %>% dplyr::filter(.$peak), ggplot2::aes_(~x, ~y), size = 2, color = "red") +
-    ggplot2::geom_text(data = . %>% dplyr::filter(.$peak), ggplot2::aes_(~x, ~(y + nudge_dist), label = ~x), color = "red")
+plot_pick <- function(data, x, y) {
+  ggplot2::ggplot(data, ggplot2::aes(x, y)) + ggplot2::geom_line() +
+    ggplot2::geom_point(data = . %>% dplyr::filter(peak), color = "red")
 }
+
+# plot_pick <- function(df, x, y) {
+#   if (!("peak" %in% colnames(df))) stop("Column peaks not found")
+#
+#   x <- rlang::enquo(x)
+#   y <- rlang::enquo(y)
+#
+#   generic_df(df, !!x, !!y) %>%
+#     dplyr::mutate(peak = df$peak, nudge_dist = (max(y) - min(y))/100 * 3) %>%
+#     ggplot2::ggplot(ggplot2::aes_(~x, ~y)) +
+#     ggplot2::geom_line() +
+#     ggplot2::geom_point(data = . %>% dplyr::filter(.$peak), ggplot2::aes_(~x, ~y), size = 2, color = "red") +
+#     ggplot2::geom_text(data = . %>% dplyr::filter(.$peak), ggplot2::aes_(~x, ~(y + nudge_dist), label = ~x), color = "red")
+# }

@@ -56,3 +56,22 @@ generic_df <- function(df, x, y) {
 
   tibble::tibble(x = dplyr::pull(df, !!x), y = dplyr::pull(df, !!y))
 }
+
+
+#' Add row to dataframe, or remove it if it already exists
+#'
+#' @param original The input dataframe
+#' @param append A dataframe containing the same columns as `original` and 1 row
+#'
+#' @return If the row in `append` exists in `original` it will be removed, otherwise it will be added to the dataframe that is returned.
+#'
+add_if_unique <- function(original, append) {
+  joined <- rbind(original, append)
+
+  if (nrow(joined) == nrow(dplyr::distinct(joined))) {
+    ret <- rbind(original, append) %>% dplyr::arrange(x)
+  } else {
+    ret <- dplyr::anti_join(original, append, by = c("x", "y"))
+  }
+  ret
+}
